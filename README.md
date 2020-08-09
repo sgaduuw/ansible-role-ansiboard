@@ -1,38 +1,49 @@
 Ansible dashboard
 =======
 
-A brief description of the role goes here.
+AnsiBoard will create an overview of Groups and Host that are members of said groups. All this is based on information about Hosts in the Ansible cache.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Caching of facts needs to be enabled. For example, use any one of the follwing options:
+```
+fact_caching = yaml
+fact_caching = json
+fact_caching = redis
+```
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Ansiboard relies heavily on cached facts. To make sure all facts are up-to-date, run the setup module against all hosts in the inventory before the ansiboard role.
 
-    - hosts: servers
+    - hosts: all
+      gather_facts: true
+      tasks:
+        - name: gather facts
+          setup:
+
+    - hosts: localhost
       roles:
-         - { role: username.rolename, x: 42 }
+        - role: ansiboard
+          tags: dashboard
+          vars:
+            ansiboard_basedir: /home/sgaduuw/tmp
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Created by Eelco Wesemann (Sgaduuw), 2020
