@@ -1,14 +1,15 @@
+<!DOCTYPE html>
 <html>
  <head>
   <title></title>
  </head>
  <body>
 Hostname: {{ item.value.ansible_hostname }}<br/>
-Domain: {{ item.value.ansible_domain }}</br/>
+Domain: {{ item.value.ansible_domain }}<br/>
 Distribution: {{ item.value.ansible_distribution }}<br/>
 Kernel: {{ item.value.ansible_kernel }}<br/>
 <pre>
 Test: {{ item.value|to_nice_json }} <br/>
 </pre>
- </body
+ </body>
 </html>
