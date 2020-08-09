@@ -11,8 +11,15 @@ galaxy_info:
   # To view available platforms and versions (or releases), visit:
   # https://galaxy.ansible.com/api/v1/platforms/
   #
-  platforms: []
+  platforms:
+    - name: Archlinux
+      versions:
+        - all
 
-  galaxy_tags: []
+  galaxy_tags:
+    - system
+    - ansible
+    - facts
+    - dashboard
 
 dependencies: []

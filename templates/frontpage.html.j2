@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title></title>
+ </head>
+ <body>
+{% for l_group in groups|sort %}
+Group <a href="groups/{{ l_group }}.html">{{ l_group }}</a> ({{ groups[l_group]|length }})<br/>
+{% endfor %}
+ </body>
+</html>
