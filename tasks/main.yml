@@ -30,3 +30,5 @@
     owner: root
     group: root
   with_dict: "{{ hostvars }}"
+  tags:
+    - molecule-idempotence-notest
