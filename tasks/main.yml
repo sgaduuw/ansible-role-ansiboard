@@ -10,20 +10,23 @@
     - "{{ ansiboard_basedir }}/groups"
     - "{{ ansiboard_basedir }}/hosts"
 
-- name: front page
+- name: render front page
   template:
     src: frontpage.html.j2
     dest: "{{ ansiboard_basedir }}/index.html"
 
-- name: with_dict
-  debug:
-    msg: "{{ item.key }}"
-  loop: "{{ groups|dict2items }}"
-
-- name: test
+- name: render individual group pages
   template:
     src: groupmembers.html.j2
     dest: "{{ ansiboard_basedir }}/groups/{{ item.key }}.html"
     owner: root
     group: root
   with_dict: "{{ groups }}"
+
+- name: render host pages
+  template:
+    src: host.html.j2
+    dest: "{{ ansiboard_basedir }}/hosts/{{ item.key }}.html"
+    owner: root
+    group: root
+  with_dict: "{{ hostvars }}"
