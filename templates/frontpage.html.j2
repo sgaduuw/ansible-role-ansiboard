@@ -4,7 +4,7 @@
  </head>
  <body>
 {% for l_group in groups|sort %}
-Group {{ l_group }} ({{ groups[l_group]|length }})
+Group <a href="groups/{{ l_group }}.html">{{ l_group }}</a> ({{ groups[l_group]|length }})<br/>
 {% endfor %}
  </body
 </html>
