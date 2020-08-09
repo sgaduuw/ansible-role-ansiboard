@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <title></title>
+ </head>
+ <body>
+{% for l_member in groups[item.key]|sort %}
+Host: <a href="../hosts/{{ l_member }}.html">{{ l_member }}</a><br/>
+{% endfor %}
+ </body>
+</html>
