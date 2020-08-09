@@ -16,6 +16,10 @@ galaxy_info:
       versions:
         - all
 
-  galaxy_tags: []
+  galaxy_tags:
+    - system
+    - ansible
+    - facts
+    - dashboard
 
 dependencies: []
