@@ -4,7 +4,7 @@
  </head>
  <body>
 {% for l_member in groups[item.key]|sort %}
-Node: {{ l_member }}
+Host: <a href="../hosts/{{ l_member }}.html">{{ l_member }}</a></br>
 {% endfor %}
  </body
 </html>
