@@ -16,7 +16,7 @@ env:
     - MOLECULE_DISTRO: fedora32
     - MOLECULE_DISTRO: fedora31
     - MOLECULE_DISTRO: fedora29
-    - MOLECULE_DISTRO: fedora28
+    #- MOLECULE_DISTRO: fedora28
     - MOLECULE_DISTRO: fedora27
     - MOLECULE_DISTRO: amazonlinux2
 
