@@ -17,22 +17,25 @@ galaxy_info:
         - all
     - name: Ubuntu
       versions:
-        - focal
-        - eoan
-        - disco
-        - cosmic
-        - bionic
-        - artful
-        - zesty
+        - all
     - name: EL
       versions:
-        - 8
-        - 7
-        - 6
+        - all
     - name: Debian
       versions:
-        - buster
-        - stretch
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: SLES
+      versions:
+        - all
+    - name: Amazon
+      versions:
+        - all
+    - name: FreeBSD
+      versions:
+        - all
 
   galaxy_tags:
     - system
