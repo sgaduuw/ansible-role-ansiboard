@@ -14,21 +14,20 @@
   template:
     src: frontpage.html.j2
     dest: "{{ ansiboard_basedir }}/index.html"
+    mode: 0644
 
 - name: render individual group pages
   template:
     src: groupmembers.html.j2
     dest: "{{ ansiboard_basedir }}/groups/{{ item.key }}.html"
-    owner: root
-    group: root
+    mode: 0644
   with_dict: "{{ groups }}"
 
 - name: render host pages
   template:
     src: host.html.j2
     dest: "{{ ansiboard_basedir }}/hosts/{{ item.key }}.html"
-    owner: root
-    group: root
+    mode: 0644
   with_dict: "{{ hostvars }}"
   tags:
     - molecule-idempotence-notest
