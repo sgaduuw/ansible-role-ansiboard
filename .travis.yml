@@ -27,8 +27,8 @@ install:
 before_script:
   # Use actual Ansible Galaxy role name for the project directory.
   - cd ../
-  - mv ansible-role-ansiboard sgaduuw.ansiboard
-  - cd sgaduuw.ansiboard
+  - mv ansible-role-ansiboard ansiboard
+  - cd ansiboard
 
 script:
   # Run tests.
