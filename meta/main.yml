@@ -1,7 +1,7 @@
 galaxy_info:
   role_name: ansiboard
   author: sgaduuw
-  description: Ansible dashboard, based on gathered facts
+  description: Ansiboard is an Ansible dashboard that displays Host/Group information based on gathered facts.
   issue_tracker_url: https://github.com/sgaduuw/ansible-role-ansiboard/issues
   license: MIT
   min_ansible_version: 2.9
@@ -13,6 +13,27 @@ galaxy_info:
   #
   platforms:
     - name: Archlinux
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: SLES
+      versions:
+        - all
+    - name: Amazon
+      versions:
+        - all
+    - name: FreeBSD
       versions:
         - all
 
