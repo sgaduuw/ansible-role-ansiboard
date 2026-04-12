@@ -8,6 +8,6 @@
           - dbus
           - tzdata
         state: present
-        update_cache: yes
+        update_cache: true
       when:
         - ansible_facts['os_family'] == "Debian"

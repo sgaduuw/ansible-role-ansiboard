@@ -4,38 +4,28 @@ galaxy_info:
   description: Ansiboard is an Ansible dashboard that displays Host/Group information based on gathered facts.
   issue_tracker_url: https://github.com/sgaduuw/ansible-role-ansiboard/issues
   license: MIT
-  min_ansible_version: 2.9
+  min_ansible_version: "2.16"
 
-  # Provide a list of supported platforms, and for each platform a list of versions.
-  # If you don't wish to enumerate all versions for a particular platform, use 'all'.
-  # To view available platforms and versions (or releases), visit:
-  # https://galaxy.ansible.com/api/v1/platforms/
-  #
   platforms:
-    - name: Archlinux
-      versions:
-        - all
-    - name: Ubuntu
-      versions:
-        - all
     - name: EL
       versions:
-        - all
+        - "8"
+        - "9"
     - name: Debian
       versions:
-        - all
+        - bullseye
+        - bookworm
+    - name: Ubuntu
+      versions:
+        - jammy
+        - noble
     - name: Fedora
       versions:
-        - all
-    - name: SLES
-      versions:
-        - all
+        - "41"
+        - "42"
     - name: Amazon
       versions:
-        - all
-    - name: FreeBSD
-      versions:
-        - all
+        - "2023"
 
   galaxy_tags:
     - system

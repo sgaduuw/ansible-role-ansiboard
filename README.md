@@ -1,6 +1,8 @@
 Ansible dashboard
 =======
 
+![CI](https://github.com/sgaduuw/ansible-role-ansiboard/actions/workflows/ci.yml/badge.svg)
+
 AnsiBoard will create an overview of Groups and Host that are members of said groups. All this is based on information about Hosts in the Ansible cache.
 
 Requirements
@@ -16,9 +18,14 @@ fact_caching = redis
 Role Variables
 --------------
 
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ansiboard_basedir` | `/var/www/html/ansiboard` | Base directory for the generated HTML dashboard |
+
 Dependencies
 ------------
 
+None.
 
 Example Playbook
 ----------------

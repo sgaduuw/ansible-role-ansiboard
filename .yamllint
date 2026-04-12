@@ -1,5 +1,4 @@
 ---
-# Based on ansible-lint config
 extends: default
 
 rules:
@@ -23,11 +22,16 @@ rules:
     level: error
   hyphens:
     level: error
-  indentation: disable
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    level: error
   key-duplicates: enable
   line-length: disable
   new-line-at-end-of-file: disable
   new-lines:
     type: unix
   trailing-spaces: disable
-  truthy: disable
+  truthy:
+    allowed-values: ["true", "false"]
+    level: warning

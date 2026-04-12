@@ -1,9 +1,50 @@
 ---
-# This is an example playbook to execute Ansible tests.
-
 - name: Verify
   hosts: all
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+    - name: check base directory exists
+      stat:
+        path: /var/www/html/ansiboard
+      register: basedir
+
+    - name: assert base directory
+      assert:
+        that: basedir.stat.isdir
+
+    - name: check index.html exists
+      stat:
+        path: /var/www/html/ansiboard/index.html
+      register: indexfile
+
+    - name: assert index.html
+      assert:
+        that: indexfile.stat.exists
+
+    - name: check groups directory
+      stat:
+        path: /var/www/html/ansiboard/groups
+      register: groupsdir
+
+    - name: assert groups directory
+      assert:
+        that: groupsdir.stat.isdir
+
+    - name: check hosts directory
+      stat:
+        path: /var/www/html/ansiboard/hosts
+      register: hostsdir
+
+    - name: assert hosts directory
+      assert:
+        that: hostsdir.stat.isdir
+
+    - name: check directory permissions
+      assert:
+        that:
+          - basedir.stat.mode == '0755'
+          - groupsdir.stat.mode == '0755'
+          - hostsdir.stat.mode == '0755'
+
+    - name: check index.html permissions
+      assert:
+        that: indexfile.stat.mode == '0644'
