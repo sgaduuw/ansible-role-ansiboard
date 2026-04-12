@@ -7,6 +7,9 @@ platforms:
   - name: instance
     image: "geerlingguy/docker-${MOLECULE_DISTRO:-rockylinux9}-ansible:latest"
     command: ""
+    tmpfs:
+      - /run
+      - /tmp
     pre_build_image: true
 provisioner:
   name: ansible

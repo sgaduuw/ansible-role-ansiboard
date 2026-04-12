@@ -1,7 +1,15 @@
 ---
 - name: Prepare
   hosts: all
+  gather_facts: false
   tasks:
+    - name: Wait for instance to be ready
+      ansible.builtin.wait_for_connection:
+        timeout: 120
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
     - name: Install prerequisites
       ansible.builtin.apt:
         name:
