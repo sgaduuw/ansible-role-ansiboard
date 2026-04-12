@@ -3,48 +3,48 @@
   hosts: all
   tasks:
     - name: check base directory exists
-      stat:
+      ansible.builtin.stat:
         path: /var/www/html/ansiboard
       register: basedir
 
     - name: assert base directory
-      assert:
+      ansible.builtin.assert:
         that: basedir.stat.isdir
 
     - name: check index.html exists
-      stat:
+      ansible.builtin.stat:
         path: /var/www/html/ansiboard/index.html
       register: indexfile
 
     - name: assert index.html
-      assert:
+      ansible.builtin.assert:
         that: indexfile.stat.exists
 
     - name: check groups directory
-      stat:
+      ansible.builtin.stat:
         path: /var/www/html/ansiboard/groups
       register: groupsdir
 
     - name: assert groups directory
-      assert:
+      ansible.builtin.assert:
         that: groupsdir.stat.isdir
 
     - name: check hosts directory
-      stat:
+      ansible.builtin.stat:
         path: /var/www/html/ansiboard/hosts
       register: hostsdir
 
     - name: assert hosts directory
-      assert:
+      ansible.builtin.assert:
         that: hostsdir.stat.isdir
 
     - name: check directory permissions
-      assert:
+      ansible.builtin.assert:
         that:
           - basedir.stat.mode == '0755'
           - groupsdir.stat.mode == '0755'
           - hostsdir.stat.mode == '0755'
 
     - name: check index.html permissions
-      assert:
+      ansible.builtin.assert:
         that: indexfile.stat.mode == '0644'

@@ -36,7 +36,7 @@ Ansiboard relies heavily on cached facts. To make sure all facts are up-to-date,
       gather_facts: true
       tasks:
         - name: gather facts
-          setup:
+          ansible.builtin.setup:
 
     - hosts: localhost
       roles:
