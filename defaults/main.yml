@@ -4,28 +4,28 @@ ansiboard_basedir: /var/www/html/ansiboard
 
 ansiboard_host_facts:
   - label: Hostname
-    key: ansible_hostname
+    key: hostname
   - label: Domain
-    key: ansible_domain
+    key: domain
   - label: FQDN
-    key: ansible_fqdn
+    key: fqdn
   - label: Distribution
-    key: ansible_distribution
+    key: distribution
   - label: Distribution version
-    key: ansible_distribution_version
+    key: distribution_version
   - label: OS family
-    key: ansible_os_family
+    key: os_family
   - label: Kernel
-    key: ansible_kernel
+    key: kernel
   - label: Architecture
-    key: ansible_architecture
+    key: architecture
   - label: Python version
-    key: ansible_python_version
+    key: python_version
   - label: IPv4 address
-    key: ansible_default_ipv4
+    key: default_ipv4
   - label: Total memory (MB)
-    key: ansible_memtotal_mb
+    key: memtotal_mb
   - label: Processor count
-    key: ansible_processor_count
+    key: processor_count
   - label: Uptime (seconds)
-    key: ansible_uptime_seconds
+    key: uptime_seconds

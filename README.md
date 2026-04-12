@@ -23,16 +23,16 @@ Role Variables
 | `ansiboard_basedir` | `/var/www/html/ansiboard` | Base directory for the generated HTML dashboard |
 | `ansiboard_host_facts` | *(see below)* | List of facts to display on each host page |
 
-`ansiboard_host_facts` is a list of dictionaries with `label` and `key` entries. The default set covers hostname, domain, distribution, kernel, architecture, IP address, memory, CPU count, and uptime. Override it to display whichever Ansible facts are relevant to your environment:
+`ansiboard_host_facts` is a list of dictionaries with `label` and `key` entries. Keys refer to entries in the `ansible_facts` dictionary (without the `ansible_` prefix). The default set covers hostname, domain, distribution, kernel, architecture, IP address, memory, CPU count, and uptime. Override it to display whichever facts are relevant to your environment:
 
 ```yaml
 ansiboard_host_facts:
   - label: Hostname
-    key: ansible_hostname
+    key: hostname
   - label: Distribution
-    key: ansible_distribution
+    key: distribution
   - label: Kernel
-    key: ansible_kernel
+    key: kernel
 ```
 
 The full JSON of all gathered facts is always available in a collapsible section at the bottom of each host page.
