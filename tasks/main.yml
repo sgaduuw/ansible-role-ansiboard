@@ -1,6 +1,6 @@
 ---
 # tasks file for ansible-role-ansiboard
-- name: directory structure
+- name: Create directory structure
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -10,20 +10,20 @@
     - "{{ ansiboard_basedir }}/groups"
     - "{{ ansiboard_basedir }}/hosts"
 
-- name: render front page
+- name: Render front page
   ansible.builtin.template:
     src: frontpage.html.j2
     dest: "{{ ansiboard_basedir }}/index.html"
     mode: "0644"
 
-- name: render individual group pages
+- name: Render individual group pages
   ansible.builtin.template:
     src: groupmembers.html.j2
     dest: "{{ ansiboard_basedir }}/groups/{{ item.key }}.html"
     mode: "0644"
   with_dict: "{{ groups }}"
 
-- name: render host pages
+- name: Render host pages
   ansible.builtin.template:
     src: host.html.j2
     dest: "{{ ansiboard_basedir }}/hosts/{{ item.key }}.html"

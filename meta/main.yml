@@ -25,7 +25,7 @@ galaxy_info:
         - "42"
     - name: Amazon
       versions:
-        - "2023"
+        - all
 
   galaxy_tags:
     - system

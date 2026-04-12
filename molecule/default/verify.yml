@@ -2,49 +2,49 @@
 - name: Verify
   hosts: all
   tasks:
-    - name: check base directory exists
+    - name: Check base directory exists
       ansible.builtin.stat:
         path: /var/www/html/ansiboard
       register: basedir
 
-    - name: assert base directory
+    - name: Assert base directory
       ansible.builtin.assert:
         that: basedir.stat.isdir
 
-    - name: check index.html exists
+    - name: Check index.html exists
       ansible.builtin.stat:
         path: /var/www/html/ansiboard/index.html
       register: indexfile
 
-    - name: assert index.html
+    - name: Assert index.html
       ansible.builtin.assert:
         that: indexfile.stat.exists
 
-    - name: check groups directory
+    - name: Check groups directory
       ansible.builtin.stat:
         path: /var/www/html/ansiboard/groups
       register: groupsdir
 
-    - name: assert groups directory
+    - name: Assert groups directory
       ansible.builtin.assert:
         that: groupsdir.stat.isdir
 
-    - name: check hosts directory
+    - name: Check hosts directory
       ansible.builtin.stat:
         path: /var/www/html/ansiboard/hosts
       register: hostsdir
 
-    - name: assert hosts directory
+    - name: Assert hosts directory
       ansible.builtin.assert:
         that: hostsdir.stat.isdir
 
-    - name: check directory permissions
+    - name: Check directory permissions
       ansible.builtin.assert:
         that:
           - basedir.stat.mode == '0755'
           - groupsdir.stat.mode == '0755'
           - hostsdir.stat.mode == '0755'
 
-    - name: check index.html permissions
+    - name: Check index.html permissions
       ansible.builtin.assert:
         that: indexfile.stat.mode == '0644'
