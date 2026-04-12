@@ -27,7 +27,7 @@
     </a>
    </div>
 {% endfor %}
-   <p class="timestamp">Generated {{ ansible_date_time.iso8601 }}</p>
+   <p class="timestamp">Generated {{ now(utc=true).isoformat() }}</p>
   </div>
  </body>
 </html>
