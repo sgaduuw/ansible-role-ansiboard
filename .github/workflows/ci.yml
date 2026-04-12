@@ -29,14 +29,13 @@ jobs:
       fail-fast: false
       matrix:
         distro:
-          - rockylinux8
           - rockylinux9
-          - debian11
           - debian12
+          - debian13
           - ubuntu2204
           - ubuntu2404
-          - fedora41
           - fedora42
+          - fedora43
           - amazonlinux2023
     steps:
       - uses: actions/checkout@v4
