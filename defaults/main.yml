@@ -1,3 +1,31 @@
 ---
 # defaults file for ansible-role-ansiboard
 ansiboard_basedir: /var/www/html/ansiboard
+
+ansiboard_host_facts:
+  - label: Hostname
+    key: ansible_hostname
+  - label: Domain
+    key: ansible_domain
+  - label: FQDN
+    key: ansible_fqdn
+  - label: Distribution
+    key: ansible_distribution
+  - label: Distribution version
+    key: ansible_distribution_version
+  - label: OS family
+    key: ansible_os_family
+  - label: Kernel
+    key: ansible_kernel
+  - label: Architecture
+    key: ansible_architecture
+  - label: Python version
+    key: ansible_python_version
+  - label: IPv4 address
+    key: ansible_default_ipv4
+  - label: Total memory (MB)
+    key: ansible_memtotal_mb
+  - label: Processor count
+    key: ansible_processor_count
+  - label: Uptime (seconds)
+    key: ansible_uptime_seconds

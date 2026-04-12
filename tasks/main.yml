@@ -31,3 +31,37 @@
   with_dict: "{{ hostvars }}"
   tags:
     - molecule-idempotence-notest
+
+- name: Find existing group pages
+  ansible.builtin.find:
+    paths: "{{ ansiboard_basedir }}/groups"
+    patterns: "*.html"
+  register: _ansiboard_existing_groups
+
+- name: Remove stale group pages
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ _ansiboard_existing_groups.files }}"
+  when: (item.path | basename | splitext | first) not in groups
+  loop_control:
+    label: "{{ item.path | basename }}"
+
+- name: Find existing host pages
+  ansible.builtin.find:
+    paths: "{{ ansiboard_basedir }}/hosts"
+    patterns: "*.html"
+  register: _ansiboard_existing_hosts
+  tags:
+    - molecule-idempotence-notest
+
+- name: Remove stale host pages
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ _ansiboard_existing_hosts.files }}"
+  when: (item.path | basename | splitext | first) not in hostvars
+  loop_control:
+    label: "{{ item.path | basename }}"
+  tags:
+    - molecule-idempotence-notest

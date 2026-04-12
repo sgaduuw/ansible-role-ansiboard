@@ -8,7 +8,7 @@ AnsiBoard will create an overview of Groups and Host that are members of said gr
 Requirements
 ------------
 
-Caching of facts needs to be enabled. For example, use any one of the follwing options:
+Caching of facts needs to be enabled. For example, use any one of the following options:
 ```
 fact_caching = yaml
 fact_caching = json
@@ -21,6 +21,21 @@ Role Variables
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ansiboard_basedir` | `/var/www/html/ansiboard` | Base directory for the generated HTML dashboard |
+| `ansiboard_host_facts` | *(see below)* | List of facts to display on each host page |
+
+`ansiboard_host_facts` is a list of dictionaries with `label` and `key` entries. The default set covers hostname, domain, distribution, kernel, architecture, IP address, memory, CPU count, and uptime. Override it to display whichever Ansible facts are relevant to your environment:
+
+```yaml
+ansiboard_host_facts:
+  - label: Hostname
+    key: ansible_hostname
+  - label: Distribution
+    key: ansible_distribution
+  - label: Kernel
+    key: ansible_kernel
+```
+
+The full JSON of all gathered facts is always available in a collapsible section at the bottom of each host page.
 
 Dependencies
 ------------
@@ -35,7 +50,7 @@ Ansiboard relies heavily on cached facts. To make sure all facts are up-to-date,
     - hosts: all
       gather_facts: true
       tasks:
-        - name: gather facts
+        - name: Gather facts
           ansible.builtin.setup:
 
     - hosts: localhost
