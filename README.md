@@ -5,6 +5,13 @@ Ansible dashboard
 
 AnsiBoard will create an overview of Groups and Host that are members of said groups. All this is based on information about Hosts in the Ansible cache.
 
+The generated dashboard includes:
+- A front page with fleet-wide summary charts and group listing
+- An all-hosts page with a sortable table of every host in the inventory
+- Per-group pages with donut charts and sortable host tables
+- Per-host detail pages with a configurable fact table and full JSON dump
+- Automatic dark mode support
+
 Requirements
 ------------
 
@@ -21,30 +28,35 @@ Role Variables
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ansiboard_basedir` | `/var/www/html/ansiboard` | Base directory for the generated HTML dashboard |
-| `ansiboard_group_charts` | *(see below)* | Donut charts shown on group pages |
-| `ansiboard_group_columns` | *(see below)* | Columns shown in the group overview table |
+| `ansiboard_group_charts` | *(see below)* | Donut charts shown on group and all-hosts pages |
+| `ansiboard_group_columns` | *(see below)* | Columns shown in group and all-hosts tables |
 | `ansiboard_host_facts` | *(see below)* | List of facts to display on each host page |
 
 All fact keys refer to entries in the `ansible_facts` dictionary (without the `ansible_` prefix).
 
-`ansiboard_group_charts` defines donut charts rendered above the host table on each group page. Each entry produces a chart showing the distribution of values for a given fact across all hosts in the group. Set to `[]` to disable charts.
+`ansiboard_group_charts` defines donut charts rendered above the host tables. Each entry produces a chart showing the distribution of values for a given fact. Set to `[]` to disable charts.
 
 ```yaml
 ansiboard_group_charts:
   - label: Distribution
     key: distribution
-  - label: Architecture
-    key: architecture
-  - label: OS family
-    key: os_family
+  - label: Kernel
+    key: kernel
+  - label: Virtualization
+    key: virtualization_role
 ```
 
-`ansiboard_group_columns` defines the columns shown in the group member table. Each entry has a `label` and a `key`. An optional `format` field supports computed values: `cores` shows physical cores/vcpus, and `mem_gib` converts `memtotal_mb` to GiB. The defaults produce a table like:
+`ansiboard_group_columns` defines the columns shown in host tables. Each entry has a `label` and a `key`. An optional `format` field supports computed values:
 
-| Hostname  | Distro    | Version | Kernel               | Arch    | Cores | Mem (GiB) |
-|-----------|-----------|---------|----------------------|---------|-------|-----------|
-| coruscant | Archlinux | N/A     | 6.19.11-arch1-1      | x86_64  | 8/16  | 128       |
-| endor     | Debian    | 13.2    | 6.12.47+rpt-rpi-2712 | aarch64 | 4     | 4         |
+| Format | Description |
+|--------|-------------|
+| `cores` | Shows `processor_cores`/`processor_vcpus` |
+| `mem_gib` | Converts `memtotal_mb` to GiB |
+| `ipv4` | Extracts `address` from the `default_ipv4` dict |
+| `uptime` | Converts `uptime_seconds` to human-readable (43d, 5h, 15m) |
+| `facts_age` | Computes time since facts were gathered, highlights stale entries |
+
+Columns are sortable by clicking on the table headers.
 
 `ansiboard_host_facts` defines the fact table on individual host pages. Override any variable to show whichever facts are relevant to your environment:
 

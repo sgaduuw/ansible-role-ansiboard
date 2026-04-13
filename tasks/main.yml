@@ -18,6 +18,14 @@
   tags:
     - molecule-idempotence-notest
 
+- name: Render all-hosts page
+  ansible.builtin.template:
+    src: allhosts.html.j2
+    dest: "{{ ansiboard_basedir }}/all.html"
+    mode: "0644"
+  tags:
+    - molecule-idempotence-notest
+
 - name: Render individual group pages
   ansible.builtin.template:
     src: groupmembers.html.j2

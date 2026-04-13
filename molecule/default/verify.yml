@@ -45,6 +45,17 @@
           - groupsdir.stat.mode == '0755'
           - hostsdir.stat.mode == '0755'
 
-    - name: Check index.html permissions
+    - name: Check all.html exists
+      ansible.builtin.stat:
+        path: /var/www/html/ansiboard/all.html
+      register: allfile
+
+    - name: Assert all.html
       ansible.builtin.assert:
-        that: indexfile.stat.mode == '0644'
+        that: allfile.stat.exists
+
+    - name: Check file permissions
+      ansible.builtin.assert:
+        that:
+          - indexfile.stat.mode == '0644'
+          - allfile.stat.mode == '0644'

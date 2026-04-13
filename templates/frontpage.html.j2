@@ -6,19 +6,81 @@
   <title>AnsiBoard</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
-    h1 { margin: 0 0 20px; font-size: 24px; font-weight: 600; }
+    h1 { margin: 0 0 4px; font-size: 24px; font-weight: 600; }
     .container { max-width: 900px; margin: 0 auto; }
+    .stats { color: #666; font-size: 14px; margin-bottom: 20px; }
+    .stats a { color: #0066cc; text-decoration: none; font-weight: 500; }
+    .stats a:hover { text-decoration: underline; }
     .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 8px; }
     .card a { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; text-decoration: none; color: #333; }
     .card a:hover { background: #f9f9f9; }
     .card .name { font-weight: 500; }
     .card .count { color: #666; font-size: 14px; }
+    .chart-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; display: flex; align-items: center; gap: 16px; }
+    .donut-hole { background: #fff; }
     .timestamp { color: #999; font-size: 13px; margin-top: 20px; }
+    h2 { font-size: 16px; font-weight: 500; margin: 24px 0 12px; color: #666; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #1a1a1a; color: #e0e0e0; }
+      .card, .chart-card { background: #2a2a2a; border-color: #404040; }
+      .card a { color: #e0e0e0; }
+      .card a:hover { background: #333; }
+      .card .count { color: #999; }
+      .stats { color: #999; }
+      .stats a { color: #6cb6ff; }
+      .timestamp { color: #666; }
+      h2 { color: #999; }
+      .donut-hole { background: #2a2a2a; }
+    }
   </style>
  </head>
  <body>
   <div class="container">
    <h1>AnsiBoard</h1>
+   <p class="stats"><a href="all.html">{{ groups['all'] | length }} hosts</a> across {{ groups | length }} groups</p>
+{% set colors = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac'] %}
+{% if ansiboard_group_charts | default([]) | length > 0 and groups['all'] | length > 0 %}
+   <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 24px; justify-content: center;">
+{% for chart in ansiboard_group_charts %}
+{%   set ns = namespace(values=[]) %}
+{%   for member in groups['all'] %}
+{%     set facts = hostvars[member].ansible_facts | default({}) %}
+{%     set ns.values = ns.values + [facts[chart.key] | default('Unknown') | string] %}
+{%   endfor %}
+{%   set unique = ns.values | unique | sort %}
+{%   set total = ns.values | length %}
+{%   set grad = namespace(offset=0, parts=[]) %}
+{%   for uv in unique %}
+{%     set uv_count = ns.values | select('equalto', uv) | list | length %}
+{%     set pct = (uv_count / total * 100) | round(1) %}
+{%     set color = colors[loop.index0 % (colors | length)] %}
+{%     if loop.last %}
+{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% 100%'] %}
+{%     else %}
+{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% ' ~ (grad.offset + pct) ~ '%'] %}
+{%     endif %}
+{%     set grad.offset = grad.offset + pct %}
+{%   endfor %}
+    <div class="chart-card">
+     <div style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
+      <div style="width: 80px; height: 80px; border-radius: 50%; background: conic-gradient({{ grad.parts | join(', ') }});"></div>
+      <div class="donut-hole" style="position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; border-radius: 50%;"></div>
+     </div>
+     <div>
+      <div style="font-weight: 500; font-size: 13px; margin-bottom: 6px;">{{ chart.label }}</div>
+{%   for uv in unique %}
+{%     set uv_count = ns.values | select('equalto', uv) | list | length %}
+      <div style="display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 1.7;">
+       <span style="display: inline-block; width: 8px; height: 8px; border-radius: 2px; background: {{ colors[loop.index0 % (colors | length)] }}; flex-shrink: 0;"></span>
+       {{ uv }} <span style="color: #999;">({{ uv_count }})</span>
+      </div>
+{%   endfor %}
+     </div>
+    </div>
+{% endfor %}
+   </div>
+{% endif %}
+   <h2>Groups</h2>
 {% for l_group in groups | sort %}
    <div class="card">
     <a href="groups/{{ l_group }}.html">
