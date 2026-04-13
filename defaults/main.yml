@@ -2,6 +2,31 @@
 # defaults file for ansible-role-ansiboard
 ansiboard_basedir: /var/www/html/ansiboard
 
+# Columns shown in the group overview table.
+# Each entry has a label and a key (from ansible_facts).
+# Optional 'format' field for computed values:
+#   cores  - shows processor_cores/processor_vcpus
+#   mem_gib - converts memtotal_mb to GiB
+ansiboard_group_columns:
+  - label: Hostname
+    key: hostname
+  - label: Distro
+    key: distribution
+  - label: Version
+    key: distribution_version
+  - label: Kernel
+    key: kernel
+  - label: Arch
+    key: architecture
+  - label: Cores
+    key: processor_cores
+    format: cores
+  - label: Mem (GiB)
+    key: memtotal_mb
+    format: mem_gib
+
+# Facts shown on individual host pages.
+# Keys refer to entries in the ansible_facts dictionary.
 ansiboard_host_facts:
   - label: Hostname
     key: hostname

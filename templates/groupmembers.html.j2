@@ -10,11 +10,16 @@
     .breadcrumb { margin-bottom: 20px; font-size: 14px; }
     .breadcrumb a { color: #0066cc; text-decoration: none; }
     .breadcrumb a:hover { text-decoration: underline; }
-    .container { max-width: 900px; margin: 0 auto; }
-    .card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 8px; }
-    .card a { display: block; padding: 12px 16px; text-decoration: none; color: #333; font-weight: 500; }
-    .card a:hover { background: #f9f9f9; }
+    .container { max-width: 1100px; margin: 0 auto; }
     .count { color: #666; font-size: 14px; margin-bottom: 16px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; }
+    th { text-align: left; padding: 10px 16px; background: #f9f9f9; border-bottom: 2px solid #e0e0e0; font-weight: 500; font-size: 13px; color: #666; white-space: nowrap; }
+    td { padding: 8px 16px; border-bottom: 1px solid #f0f0f0; font-size: 14px; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f9f9f9; }
+    td a { color: #333; text-decoration: none; font-weight: 500; }
+    td a:hover { color: #0066cc; }
+    .na { color: #ccc; }
   </style>
  </head>
  <body>
@@ -22,11 +27,51 @@
    <div class="breadcrumb"><a href="../index.html">AnsiBoard</a> / {{ item.key }}</div>
    <h1>{{ item.key }}</h1>
    <p class="count">{{ groups[item.key] | length }} host{{ 's' if groups[item.key] | length != 1 }}</p>
-{% for l_member in groups[item.key] | sort %}
-   <div class="card">
-    <a href="../hosts/{{ l_member }}.html">{{ l_member }}</a>
-   </div>
+   <table>
+    <thead>
+     <tr>
+{% for col in ansiboard_group_columns %}
+      <th>{{ col.label }}</th>
 {% endfor %}
+     </tr>
+    </thead>
+    <tbody>
+{% for l_member in groups[item.key] | sort %}
+{%   set facts = hostvars[l_member].ansible_facts | default({}) %}
+     <tr>
+{% for col in ansiboard_group_columns %}
+{%   if col.format | default('') == 'cores' %}
+{%     set cores = facts.processor_cores | default('') %}
+{%     set vcpus = facts.processor_vcpus | default('') %}
+{%     if cores and vcpus and cores != vcpus %}
+{%       set value = cores ~ '/' ~ vcpus %}
+{%     elif vcpus %}
+{%       set value = vcpus %}
+{%     else %}
+{%       set value = '' %}
+{%     endif %}
+{%   elif col.format | default('') == 'mem_gib' %}
+{%     set mb = facts[col.key] | default(0) | int %}
+{%     if mb > 0 %}
+{%       set value = (mb / 1024) | round(0, 'ceil') | int %}
+{%     else %}
+{%       set value = '' %}
+{%     endif %}
+{%   else %}
+{%     set value = facts[col.key] | default('') %}
+{%   endif %}
+{%   if loop.first %}
+      <td><a href="../hosts/{{ l_member }}.html">{{ value if value else l_member }}</a></td>
+{%   elif value %}
+      <td>{{ value }}</td>
+{%   else %}
+      <td class="na">n/a</td>
+{%   endif %}
+{% endfor %}
+     </tr>
+{% endfor %}
+    </tbody>
+   </table>
   </div>
  </body>
 </html>

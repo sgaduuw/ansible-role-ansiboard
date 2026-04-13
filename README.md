@@ -21,11 +21,29 @@ Role Variables
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ansiboard_basedir` | `/var/www/html/ansiboard` | Base directory for the generated HTML dashboard |
+| `ansiboard_group_columns` | *(see below)* | Columns shown in the group overview table |
 | `ansiboard_host_facts` | *(see below)* | List of facts to display on each host page |
 
-`ansiboard_host_facts` is a list of dictionaries with `label` and `key` entries. Keys refer to entries in the `ansible_facts` dictionary (without the `ansible_` prefix). The default set covers hostname, domain, distribution, kernel, architecture, IP address, memory, CPU count, and uptime. Override it to display whichever facts are relevant to your environment:
+All fact keys refer to entries in the `ansible_facts` dictionary (without the `ansible_` prefix).
+
+`ansiboard_group_columns` defines the columns shown in the group member table. Each entry has a `label` and a `key`. An optional `format` field supports computed values: `cores` shows physical cores/vcpus, and `mem_gib` converts `memtotal_mb` to GiB. The defaults produce a table like:
+
+| Hostname  | Distro    | Version | Kernel               | Arch    | Cores | Mem (GiB) |
+|-----------|-----------|---------|----------------------|---------|-------|-----------|
+| coruscant | Archlinux | N/A     | 6.19.11-arch1-1      | x86_64  | 8/16  | 128       |
+| endor     | Debian    | 13.2    | 6.12.47+rpt-rpi-2712 | aarch64 | 4     | 4         |
+
+`ansiboard_host_facts` defines the fact table on individual host pages. Override either variable to show whichever facts are relevant to your environment:
 
 ```yaml
+ansiboard_group_columns:
+  - label: Hostname
+    key: hostname
+  - label: Distro
+    key: distribution
+  - label: Kernel
+    key: kernel
+
 ansiboard_host_facts:
   - label: Hostname
     key: hostname
