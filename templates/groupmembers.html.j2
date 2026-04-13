@@ -27,6 +27,49 @@
    <div class="breadcrumb"><a href="../index.html">AnsiBoard</a> / {{ item.key }}</div>
    <h1>{{ item.key }}</h1>
    <p class="count">{{ groups[item.key] | length }} host{{ 's' if groups[item.key] | length != 1 }}</p>
+{% set colors = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac'] %}
+{% if ansiboard_group_charts | default([]) | length > 0 and groups[item.key] | length > 0 %}
+   <div style="display: flex; flex-wrap: wrap; gap: 32px; margin-bottom: 24px;">
+{% for chart in ansiboard_group_charts %}
+{%   set ns = namespace(values=[]) %}
+{%   for member in groups[item.key] %}
+{%     set facts = hostvars[member].ansible_facts | default({}) %}
+{%     set ns.values = ns.values + [facts[chart.key] | default('Unknown') | string] %}
+{%   endfor %}
+{%   set unique = ns.values | unique | sort %}
+{%   set total = ns.values | length %}
+{%   set grad = namespace(offset=0, parts=[]) %}
+{%   for uv in unique %}
+{%     set uv_count = ns.values | select('equalto', uv) | list | length %}
+{%     set pct = (uv_count / total * 100) | round(1) %}
+{%     set color = colors[loop.index0 % (colors | length)] %}
+{%     if loop.last %}
+{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% 100%'] %}
+{%     else %}
+{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% ' ~ (grad.offset + pct) ~ '%'] %}
+{%     endif %}
+{%     set grad.offset = grad.offset + pct %}
+{%   endfor %}
+    <div style="background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; display: flex; align-items: center; gap: 20px;">
+     <div style="position: relative; width: 110px; height: 110px; flex-shrink: 0;">
+      <div style="width: 110px; height: 110px; border-radius: 50%; background: conic-gradient({{ grad.parts | join(', ') }});"></div>
+      <div style="position: absolute; top: 27px; left: 27px; width: 56px; height: 56px; border-radius: 50%; background: #fff;"></div>
+     </div>
+     <div>
+      <div style="font-weight: 500; font-size: 14px; margin-bottom: 8px;">{{ chart.label }}</div>
+{%   for uv in unique %}
+{%     set uv_count = ns.values | select('equalto', uv) | list | length %}
+{%     set pct = (uv_count / total * 100) | round(0) | int %}
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 1.8;">
+       <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: {{ colors[loop.index0 % (colors | length)] }}; flex-shrink: 0;"></span>
+       {{ uv }} <span style="color: #999;">({{ uv_count }}, {{ pct }}%)</span>
+      </div>
+{%   endfor %}
+     </div>
+    </div>
+{% endfor %}
+   </div>
+{% endif %}
    <table>
     <thead>
      <tr>

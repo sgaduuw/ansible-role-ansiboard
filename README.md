@@ -21,10 +21,23 @@ Role Variables
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `ansiboard_basedir` | `/var/www/html/ansiboard` | Base directory for the generated HTML dashboard |
+| `ansiboard_group_charts` | *(see below)* | Donut charts shown on group pages |
 | `ansiboard_group_columns` | *(see below)* | Columns shown in the group overview table |
 | `ansiboard_host_facts` | *(see below)* | List of facts to display on each host page |
 
 All fact keys refer to entries in the `ansible_facts` dictionary (without the `ansible_` prefix).
+
+`ansiboard_group_charts` defines donut charts rendered above the host table on each group page. Each entry produces a chart showing the distribution of values for a given fact across all hosts in the group. Set to `[]` to disable charts.
+
+```yaml
+ansiboard_group_charts:
+  - label: Distribution
+    key: distribution
+  - label: Architecture
+    key: architecture
+  - label: OS family
+    key: os_family
+```
 
 `ansiboard_group_columns` defines the columns shown in the group member table. Each entry has a `label` and a `key`. An optional `format` field supports computed values: `cores` shows physical cores/vcpus, and `mem_gib` converts `memtotal_mb` to GiB. The defaults produce a table like:
 
@@ -33,17 +46,9 @@ All fact keys refer to entries in the `ansible_facts` dictionary (without the `a
 | coruscant | Archlinux | N/A     | 6.19.11-arch1-1      | x86_64  | 8/16  | 128       |
 | endor     | Debian    | 13.2    | 6.12.47+rpt-rpi-2712 | aarch64 | 4     | 4         |
 
-`ansiboard_host_facts` defines the fact table on individual host pages. Override either variable to show whichever facts are relevant to your environment:
+`ansiboard_host_facts` defines the fact table on individual host pages. Override any variable to show whichever facts are relevant to your environment:
 
 ```yaml
-ansiboard_group_columns:
-  - label: Hostname
-    key: hostname
-  - label: Distro
-    key: distribution
-  - label: Kernel
-    key: kernel
-
 ansiboard_host_facts:
   - label: Hostname
     key: hostname

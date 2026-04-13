@@ -2,10 +2,22 @@
 # defaults file for ansible-role-ansiboard
 ansiboard_basedir: /var/www/html/ansiboard
 
+# Pie charts shown on group pages.
+# Each entry produces a donut chart with a legend.
+# Keys refer to entries in the ansible_facts dictionary.
+# Set to [] to disable charts.
+ansiboard_group_charts:
+  - label: Distribution
+    key: distribution
+  - label: Kernel
+    key: kernel
+  - label: OS family
+    key: os_family
+
 # Columns shown in the group overview table.
 # Each entry has a label and a key (from ansible_facts).
 # Optional 'format' field for computed values:
-#   cores  - shows processor_cores/processor_vcpus
+#   cores   - shows processor_cores/processor_vcpus
 #   mem_gib - converts memtotal_mb to GiB
 ansiboard_group_columns:
   - label: Hostname
