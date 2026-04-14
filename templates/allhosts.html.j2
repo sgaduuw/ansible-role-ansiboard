@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AnsiBoard - All hosts</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/theme/mermaid.min.css">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
     h1 { margin: 0 0 4px; font-size: 24px; font-weight: 600; }
@@ -15,7 +15,6 @@
     .count { color: #666; font-size: 14px; margin-bottom: 16px; }
     .chart-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; display: flex; align-items: center; gap: 20px; }
     .donut-hole { background: #fff; }
-    .stale { color: #e15759; }
     .export-btn { display: inline-block; margin-bottom: 12px; padding: 6px 14px; font-size: 13px; border: 1px solid #e0e0e0; border-radius: 4px; background: #fff; color: #333; cursor: pointer; text-decoration: none; }
     .export-btn:hover { background: #f0f0f0; }
     @media (prefers-color-scheme: dark) {
@@ -98,7 +97,7 @@
    <a href="#" class="export-btn" id="export-csv">Export CSV</a>
    <div id="grid"></div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/gridjs.umd.js"></script>
   <script>
   var tableData = [
 {% for l_member in groups['all'] | sort %}
@@ -156,9 +155,9 @@
 {%     set value = facts[col.key] | default('') %}
 {%   endif %}
 {%   if loop.first %}
-      "{{ value if value else l_member }}",
+      {{ l_member | to_json }},
 {%   else %}
-      "{{ value }}",
+      {{ value | string | to_json }},
 {%   endif %}
 {% endfor %}
     ],
@@ -168,17 +167,28 @@
 {% for col in ansiboard_group_columns %}
 {%   if loop.first %}
     {
-      name: "{{ col.label }}",
-      formatter: function(cell, row) {
-        return gridjs.html('<a href="hosts/' + encodeURIComponent(row._cells[0].data) + '.html">' + cell + '</a>');
+      name: {{ col.label | to_json }},
+      formatter: function(cell) {
+        return gridjs.html('<a href="hosts/' + encodeURIComponent(cell) + '.html">' + cell + '</a>');
+      }
+    },
+{%   elif col.format | default('') == 'facts_age' %}
+    {
+      name: {{ col.label | to_json }},
+      formatter: function(cell) {
+        var m = String(cell).match(/^(\d+)d$/);
+        if (m && parseInt(m[1]) >= 2) {
+          return gridjs.html('<span style="color: #e15759;">' + cell + '</span>');
+        }
+        return cell;
       }
     },
 {%   else %}
-    "{{ col.label }}",
+    {{ col.label | to_json }},
 {%   endif %}
 {% endfor %}
   ];
-  var grid = new gridjs.Grid({
+  new gridjs.Grid({
     columns: columns,
     data: tableData,
     search: true,
@@ -192,7 +202,7 @@
     e.preventDefault();
     var headers = [
 {% for col in ansiboard_group_columns %}
-      "{{ col.label }}",
+      {{ col.label | to_json }},
 {% endfor %}
     ];
     var csv = headers.join(',') + '\n';
