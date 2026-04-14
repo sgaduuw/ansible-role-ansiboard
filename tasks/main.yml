@@ -32,6 +32,8 @@
     dest: "{{ ansiboard_basedir }}/groups/{{ item.key }}.html"
     mode: "0644"
   with_dict: "{{ groups }}"
+  tags:
+    - molecule-idempotence-notest
 
 - name: Render host pages
   ansible.builtin.template:
