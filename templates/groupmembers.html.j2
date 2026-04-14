@@ -29,14 +29,16 @@
       .gridjs-container { --gridjs-border-color: #404040; }
       .gridjs-wrapper { border-color: #404040; }
       .gridjs-table { background: #2a2a2a; }
-      .gridjs-thead th { background: #333; color: #999; border-color: #404040; }
+      .gridjs-thead th { background: #333 !important; color: #999; border-color: #404040; }
       .gridjs-thead th:hover { color: #e0e0e0; }
+      .gridjs-thead .gridjs-th-sort:hover, .gridjs-thead .gridjs-th-sort:focus { background: #404040 !important; }
       .gridjs-tbody td { background: #2a2a2a; color: #e0e0e0; border-color: #333; }
       .gridjs-tbody tr:hover td { background: #333; }
       .gridjs-search-input { background: #2a2a2a !important; color: #e0e0e0 !important; border-color: #404040 !important; }
       .gridjs-footer { background: #2a2a2a; border-color: #404040; }
       .gridjs-pagination .gridjs-pages button { background: #2a2a2a; color: #e0e0e0; border-color: #404040; }
-      .gridjs-pagination .gridjs-pages button:hover { background: #333; }
+      .gridjs-pagination .gridjs-pages button:hover { background: #333 !important; color: #e0e0e0 !important; }
+      .gridjs-pagination .gridjs-pages { background: transparent; }
       .gridjs-pagination .gridjs-pages button.gridjs-currentPage { background: #404040; }
       .gridjs-pagination .gridjs-summary { color: #999; }
       td a { color: #e0e0e0; }
