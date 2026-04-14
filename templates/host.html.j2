@@ -38,7 +38,14 @@
    <p class="subtitle">{{ item.value.ansible_facts.fqdn | default('') }}</p>
    <table>
 {% for fact in ansiboard_host_facts %}
-{%   set value = item.value.ansible_facts[fact.key] | default('n/a') %}
+{%   set raw = item.value.ansible_facts[fact.key] | default('n/a') %}
+{%   if raw is mapping and raw.address is defined %}
+{%     set value = raw.address %}
+{%   elif raw is mapping %}
+{%     set value = raw | to_nice_json %}
+{%   else %}
+{%     set value = raw %}
+{%   endif %}
     <tr><th>{{ fact.label }}</th><td>{{ value }}</td></tr>
 {% endfor %}
    </table>
