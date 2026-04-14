@@ -5,7 +5,7 @@
     path: "{{ item }}"
     state: directory
     mode: "0755"
-  with_items:
+  loop:
     - "{{ ansiboard_basedir }}"
     - "{{ ansiboard_basedir }}/groups"
     - "{{ ansiboard_basedir }}/hosts"
@@ -31,7 +31,9 @@
     src: groupmembers.html.j2
     dest: "{{ ansiboard_basedir }}/groups/{{ item.key }}.html"
     mode: "0644"
-  with_dict: "{{ groups }}"
+  loop: "{{ groups | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
   tags:
     - molecule-idempotence-notest
 
@@ -40,7 +42,9 @@
     src: host.html.j2
     dest: "{{ ansiboard_basedir }}/hosts/{{ item.key }}.html"
     mode: "0644"
-  with_dict: "{{ hostvars }}"
+  loop: "{{ hostvars | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
   tags:
     - molecule-idempotence-notest
 

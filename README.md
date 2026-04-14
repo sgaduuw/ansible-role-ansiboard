@@ -81,10 +81,8 @@ No Ansible role dependencies. The generated dashboard loads [Grid.js](https://gr
 Example Playbook
 ----------------
 
-Ansiboard relies heavily on cached facts. To make sure all facts are up-to-date, run the setup module against all hosts in the inventory before the ansiboard role.
-
     - hosts: all
-      gather_facts: true
+      gather_facts: false
       tasks:
         - name: Gather facts
           ansible.builtin.setup:
