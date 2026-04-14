@@ -20,6 +20,15 @@
       ansible.builtin.assert:
         that: indexfile.stat.exists
 
+    - name: Check all.html exists
+      ansible.builtin.stat:
+        path: /var/www/html/ansiboard/all.html
+      register: allfile
+
+    - name: Assert all.html
+      ansible.builtin.assert:
+        that: allfile.stat.exists
+
     - name: Check groups directory
       ansible.builtin.stat:
         path: /var/www/html/ansiboard/groups
@@ -45,17 +54,49 @@
           - groupsdir.stat.mode == '0755'
           - hostsdir.stat.mode == '0755'
 
-    - name: Check all.html exists
-      ansible.builtin.stat:
-        path: /var/www/html/ansiboard/all.html
-      register: allfile
-
-    - name: Assert all.html
-      ansible.builtin.assert:
-        that: allfile.stat.exists
-
     - name: Check file permissions
       ansible.builtin.assert:
         that:
           - indexfile.stat.mode == '0644'
           - allfile.stat.mode == '0644'
+
+    - name: Check group page exists
+      ansible.builtin.stat:
+        path: /var/www/html/ansiboard/groups/all.html
+      register: grouppage
+
+    - name: Assert group page exists
+      ansible.builtin.assert:
+        that: grouppage.stat.exists
+
+    - name: Check host page exists
+      ansible.builtin.stat:
+        path: "/var/www/html/ansiboard/hosts/{{ inventory_hostname }}.html"
+      register: hostpage
+
+    - name: Assert host page exists
+      ansible.builtin.assert:
+        that: hostpage.stat.exists
+
+    - name: Read all-hosts page
+      ansible.builtin.slurp:
+        src: /var/www/html/ansiboard/all.html
+      register: allhtml
+
+    - name: Assert all-hosts page contains expected content
+      ansible.builtin.assert:
+        that:
+          - "'gridjs' in allhtml.content | b64decode"
+          - "'Export CSV' in allhtml.content | b64decode"
+          - "inventory_hostname in allhtml.content | b64decode"
+
+    - name: Read front page
+      ansible.builtin.slurp:
+        src: /var/www/html/ansiboard/index.html
+      register: indexhtml
+
+    - name: Assert front page contains expected content
+      ansible.builtin.assert:
+        that:
+          - "'AnsiBoard' in indexhtml.content | b64decode"
+          - "'all.html' in indexhtml.content | b64decode"
