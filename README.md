@@ -7,9 +7,10 @@ AnsiBoard will create an overview of Groups and Host that are members of said gr
 
 The generated dashboard includes:
 - A front page with fleet-wide summary charts and group listing
-- An all-hosts page with a sortable table of every host in the inventory
-- Per-group pages with donut charts and sortable host tables
+- An all-hosts page with a searchable, sortable table of every host
+- Per-group pages with donut charts and searchable, sortable host tables
 - Per-host detail pages with a configurable fact table and full JSON dump
+- CSV export on all table pages
 - Automatic dark mode support
 
 Requirements
@@ -56,7 +57,7 @@ ansiboard_group_charts:
 | `uptime` | Converts `uptime_seconds` to human-readable (43d, 5h, 15m) |
 | `facts_age` | Computes time since facts were gathered, highlights stale entries |
 
-Columns are sortable by clicking on the table headers.
+Tables support search, sorting, pagination, and CSV export via Grid.js.
 
 `ansiboard_host_facts` defines the fact table on individual host pages. Override any variable to show whichever facts are relevant to your environment:
 
@@ -75,7 +76,7 @@ The full JSON of all gathered facts is always available in a collapsible section
 Dependencies
 ------------
 
-None.
+No Ansible role dependencies. The generated dashboard loads [Grid.js](https://gridjs.io/) from cdn.jsdelivr.net for table search, sorting, pagination, and CSV export. Browsers viewing the dashboard need internet access.
 
 Example Playbook
 ----------------
