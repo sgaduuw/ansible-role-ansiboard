@@ -1,7 +1,6 @@
 ---
 skip_list:
   - yaml[line-length]
-  - name[missing]
 
 exclude_paths:
   - molecule/
