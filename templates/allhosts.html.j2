@@ -11,7 +11,7 @@
     .breadcrumb { margin-bottom: 20px; font-size: 14px; }
     .breadcrumb a { color: #0066cc; text-decoration: none; }
     .breadcrumb a:hover { text-decoration: underline; }
-    .container { max-width: 1100px; margin: 0 auto; }
+    .container { max-width: 1400px; margin: 0 auto; }
     .count { color: #666; font-size: 14px; margin-bottom: 16px; }
     .chart-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 16px; display: flex; align-items: center; gap: 20px; }
     .donut-hole { background: #fff; }
@@ -33,7 +33,7 @@
       .gridjs-thead th:hover { color: #e0e0e0; }
       .gridjs-tbody td { background: #2a2a2a; color: #e0e0e0; border-color: #333; }
       .gridjs-tbody tr:hover td { background: #333; }
-      .gridjs-search-input { background: #2a2a2a; color: #e0e0e0; border-color: #404040; }
+      .gridjs-search-input { background: #2a2a2a !important; color: #e0e0e0 !important; border-color: #404040 !important; }
       .gridjs-footer { background: #2a2a2a; border-color: #404040; }
       .gridjs-pagination .gridjs-pages button { background: #2a2a2a; color: #e0e0e0; border-color: #404040; }
       .gridjs-pagination .gridjs-pages button:hover { background: #333; }
@@ -182,7 +182,7 @@
     search: true,
     sort: true,
     pagination: { limit: 50 },
-    fixedHeader: true,
+    autoWidth: true,
     style: { table: { 'white-space': 'nowrap' } }
   }).render(document.getElementById('grid'));
 
