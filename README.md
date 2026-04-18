@@ -5,6 +5,8 @@ Ansible dashboard
 
 AnsiBoard will create an overview of Groups and Host that are members of said groups. All this is based on information about Hosts in the Ansible cache.
 
+![AnsiBoard all-hosts view](docs/ansiboard-groups-all.png)
+
 The generated dashboard includes:
 - A front page with fleet-wide summary charts and group listing
 - An all-hosts page with a searchable, sortable table of every host
