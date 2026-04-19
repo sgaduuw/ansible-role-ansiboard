@@ -49,10 +49,6 @@
     <tr><th>{{ fact.label | e }}</th><td>{{ value | e }}</td></tr>
 {% endfor %}
    </table>
-   <details>
-    <summary>Show all gathered facts</summary>
-    <pre>{{ item.value.ansible_facts | to_nice_json }}</pre>
-   </details>
   </div>
  </body>
 </html>
