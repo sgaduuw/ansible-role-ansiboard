@@ -4,7 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AnsiBoard - {{ item.key | e }}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/theme/mermaid.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/theme/mermaid.min.css"
+        integrity="sha384-i8iPOOXHyYKlqvjJjbORq7m/VrfUhgupTg3IZvtXz8M7c0CiTPUUhM5gdjiQiGbv"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer">
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
     h1 { margin: 0 0 4px; font-size: 24px; font-weight: 600; }
@@ -51,7 +55,6 @@
    <h1>{{ item.key | e }}</h1>
    <p class="count">{{ groups[item.key] | length }} host{{ 's' if groups[item.key] | length != 1 }}</p>
 {% set colors = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac'] %}
-{% set now_epoch = now(utc=true).strftime('%s') | int %}
 {% if ansiboard_group_charts | default([]) | length > 0 and groups[item.key] | length > 0 %}
    <div style="display: flex; flex-wrap: wrap; gap: 32px; margin-bottom: 24px; justify-content: center;">
 {% for chart in ansiboard_group_charts %}
@@ -62,17 +65,15 @@
 {%   endfor %}
 {%   set unique = ns.values | unique | sort %}
 {%   set total = ns.values | length %}
-{%   set grad = namespace(offset=0, parts=[]) %}
+{%   set grad = namespace(cum_count=0, prev_stop=0, parts=[], pcts=[]) %}
 {%   for uv in unique %}
 {%     set uv_count = ns.values | select('equalto', uv) | list | length %}
-{%     set pct = (uv_count / total * 100) | round(1) %}
+{%     set grad.cum_count = grad.cum_count + uv_count %}
+{%     set stop = (grad.cum_count / total * 100) | round(0) | int %}
 {%     set color = colors[loop.index0 % (colors | length)] %}
-{%     if loop.last %}
-{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% 100%'] %}
-{%     else %}
-{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% ' ~ (grad.offset + pct) ~ '%'] %}
-{%     endif %}
-{%     set grad.offset = grad.offset + pct %}
+{%     set grad.parts = grad.parts + [color ~ ' ' ~ grad.prev_stop ~ '% ' ~ stop ~ '%'] %}
+{%     set grad.pcts = grad.pcts + [stop - grad.prev_stop] %}
+{%     set grad.prev_stop = stop %}
 {%   endfor %}
     <div class="chart-card">
      <div style="position: relative; width: 110px; height: 110px; flex-shrink: 0;">
@@ -83,10 +84,9 @@
       <div style="font-weight: 500; font-size: 14px; margin-bottom: 8px;">{{ chart.label | e }}</div>
 {%   for uv in unique %}
 {%     set uv_count = ns.values | select('equalto', uv) | list | length %}
-{%     set pct = (uv_count / total * 100) | round(0) | int %}
       <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 1.8;">
        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: {{ colors[loop.index0 % (colors | length)] }}; flex-shrink: 0;"></span>
-       {{ uv | e }} <span style="color: #999;">({{ uv_count }}, {{ pct }}%)</span>
+       {{ uv | e }} <span style="color: #999;">({{ uv_count }}, {{ grad.pcts[loop.index0] }}%)</span>
       </div>
 {%   endfor %}
      </div>
@@ -97,12 +97,23 @@
    <a href="#" class="export-btn" id="export-csv">Export CSV</a>
    <div id="grid"></div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/gridjs.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gridjs@6.2.0/dist/gridjs.umd.js"
+          integrity="sha384-y62I+ZvjNRolkugL/AMpUZykqrL6oqYxBruObmlDAhDpmapM0s+xgvVK+wGVpza0"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"></script>
   <script>
   function escapeHtml(s) {
     var d = document.createElement('div');
     d.appendChild(document.createTextNode(s));
     return d.innerHTML;
+  }
+  function formatAge(cell) {
+    var epoch = parseInt(cell, 10);
+    if (!epoch) return '';
+    var age = Math.max(0, Math.floor(Date.now() / 1000) - epoch);
+    if (age >= 86400) return Math.floor(age / 86400) + 'd';
+    if (age >= 3600)  return Math.floor(age / 3600)  + 'h';
+    return Math.floor(age / 60) + 'm';
   }
   var tableData = [
 {% for l_member in groups[item.key] | sort %}
@@ -122,47 +133,22 @@
 {%     endif %}
 {%   elif fmt == 'mem_gib' %}
 {%     set mb = facts[col.key] | default(0) | int %}
-{%     if mb > 0 %}
-{%       set value = (mb / 1024) | round(0, 'ceil') | int %}
-{%     else %}
-{%       set value = '' %}
-{%     endif %}
+{%     set value = ((mb / 1024) | round(0, 'ceil') | int) if mb > 0 else 0 %}
 {%   elif fmt == 'ipv4' %}
 {%     set value = facts[col.key].address | default('') %}
 {%   elif fmt == 'uptime' %}
-{%     set secs = facts[col.key] | default(0) | int %}
-{%     if secs >= 86400 %}
-{%       set value = (secs // 86400) ~ 'd' %}
-{%     elif secs >= 3600 %}
-{%       set value = (secs // 3600) ~ 'h' %}
-{%     elif secs > 0 %}
-{%       set value = (secs // 60) ~ 'm' %}
-{%     else %}
-{%       set value = '' %}
-{%     endif %}
+{%     set value = facts[col.key] | default(0) | int %}
 {%   elif fmt == 'facts_age' %}
-{%     set epoch = facts.date_time.epoch | default(0) | int %}
-{%     if epoch > 0 %}
-{%       set age = now_epoch - epoch %}
-{%       if age >= 86400 %}
-{%         set value = (age // 86400) ~ 'd' %}
-{%       elif age >= 3600 %}
-{%         set value = (age // 3600) ~ 'h' %}
-{%       elif age >= 0 %}
-{%         set value = (age // 60) ~ 'm' %}
-{%       else %}
-{%         set value = '' %}
-{%       endif %}
-{%     else %}
-{%       set value = '' %}
-{%     endif %}
+{%     set value = facts.date_time.epoch | default(0) | int %}
 {%   else %}
 {%     set value = facts[col.key] | default('') %}
 {%   endif %}
 {%   if loop.first %}
-      {{ l_member | to_json }},
+      {{ l_member | tojson }},
+{%   elif fmt in ['mem_gib', 'uptime', 'facts_age'] %}
+      {{ value | tojson }},
 {%   else %}
-      {{ value | string | to_json }},
+      {{ value | string | tojson }},
 {%   endif %}
 {% endfor %}
     ],
@@ -172,24 +158,54 @@
 {% for col in ansiboard_group_columns %}
 {%   if loop.first %}
     {
-      name: {{ col.label | to_json }},
+      name: {{ col.label | tojson }},
       formatter: function(cell) {
         return gridjs.html('<a href="../hosts/' + encodeURIComponent(cell) + '.html">' + escapeHtml(cell) + '</a>');
       }
     },
 {%   elif col.format | default('') == 'facts_age' %}
     {
-      name: {{ col.label | to_json }},
+      name: {{ col.label | tojson }},
+      sort: { compare: function(a, b) { return parseInt(b, 10) - parseInt(a, 10); } },
       formatter: function(cell) {
-        var m = String(cell).match(/^(\d+)d$/);
-        if (m && parseInt(m[1]) >= 2) {
-          return gridjs.html('<span style="color: #e15759;">' + escapeHtml(cell) + '</span>');
+        var epoch = parseInt(cell, 10);
+        var label = formatAge(cell);
+        if (epoch && (Math.floor(Date.now() / 1000) - epoch) >= 172800) {
+          return gridjs.html('<span style="color: #e15759;">' + escapeHtml(label) + '</span>');
         }
-        return cell;
+        return label;
       }
     },
+{%   elif col.format | default('') == 'uptime' %}
+    {
+      name: {{ col.label | tojson }},
+      formatter: function(cell) {
+        var n = parseInt(cell, 10);
+        if (isNaN(n) || n < 0) return '';
+        return Math.floor(n / 86400) + 'd';
+      }
+    },
+{%   elif col.format | default('') == 'mem_gib' %}
+    {
+      name: {{ col.label | tojson }},
+      formatter: function(cell) {
+        var n = parseInt(cell, 10);
+        return (isNaN(n) || n <= 0) ? '' : String(n);
+      }
+    },
+{%   elif col.format | default('') == 'cores' %}
+    {
+      name: {{ col.label | tojson }},
+      sort: { compare: function(a, b) {
+        var na = parseInt(a, 10);
+        var nb = parseInt(b, 10);
+        if (isNaN(na)) na = -1;
+        if (isNaN(nb)) nb = -1;
+        return na - nb;
+      } }
+    },
 {%   else %}
-    {{ col.label | to_json }},
+    {{ col.label | tojson }},
 {%   endif %}
 {% endfor %}
   ];
@@ -207,13 +223,22 @@
     e.preventDefault();
     var headers = [
 {% for col in ansiboard_group_columns %}
-      {{ col.label | to_json }},
+      {{ col.label | tojson }},
 {% endfor %}
     ];
+    var columnFormats = [{% for col in ansiboard_group_columns %}{{ col.format | default('') | tojson }},{% endfor %}];
+    function csvValue(cell, fmt) {
+      if (fmt === 'facts_age') return formatAge(cell);
+      if (fmt === 'uptime') {
+        var n = parseInt(cell, 10);
+        return (isNaN(n) || n < 0) ? '' : String(Math.floor(n / 86400));
+      }
+      return String(cell);
+    }
     var csv = headers.join(',') + '\n';
     tableData.forEach(function(row) {
-      csv += row.map(function(cell) {
-        var val = String(cell);
+      csv += row.map(function(cell, i) {
+        var val = csvValue(cell, columnFormats[i]);
         if (val.indexOf(',') > -1 || val.indexOf('"') > -1) {
           return '"' + val.replace(/"/g, '""') + '"';
         }
@@ -223,7 +248,7 @@
     var blob = new Blob([csv], { type: 'text/csv' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = {{ (item.key ~ '.csv') | to_json }};
+    a.download = {{ (item.key ~ '.csv') | tojson }};
     a.click();
   });
   </script>

@@ -37,7 +37,7 @@
  <body>
   <div class="container">
    <h1>AnsiBoard</h1>
-   <p class="stats"><a href="all.html">{{ groups['all'] | length }} hosts</a> across {{ groups | length }} groups</p>
+   <p class="stats"><a href="groups/all.html">{{ groups['all'] | length }} hosts</a> across {{ groups | length }} groups</p>
 {% set colors = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac'] %}
 {% if ansiboard_group_charts | default([]) | length > 0 and groups['all'] | length > 0 %}
    <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-bottom: 24px; justify-content: center;">
@@ -49,17 +49,15 @@
 {%   endfor %}
 {%   set unique = ns.values | unique | sort %}
 {%   set total = ns.values | length %}
-{%   set grad = namespace(offset=0, parts=[]) %}
+{%   set grad = namespace(cum_count=0, prev_stop=0, parts=[], pcts=[]) %}
 {%   for uv in unique %}
 {%     set uv_count = ns.values | select('equalto', uv) | list | length %}
-{%     set pct = (uv_count / total * 100) | round(1) %}
+{%     set grad.cum_count = grad.cum_count + uv_count %}
+{%     set stop = (grad.cum_count / total * 100) | round(0) | int %}
 {%     set color = colors[loop.index0 % (colors | length)] %}
-{%     if loop.last %}
-{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% 100%'] %}
-{%     else %}
-{%       set grad.parts = grad.parts + [color ~ ' ' ~ grad.offset ~ '% ' ~ (grad.offset + pct) ~ '%'] %}
-{%     endif %}
-{%     set grad.offset = grad.offset + pct %}
+{%     set grad.parts = grad.parts + [color ~ ' ' ~ grad.prev_stop ~ '% ' ~ stop ~ '%'] %}
+{%     set grad.pcts = grad.pcts + [stop - grad.prev_stop] %}
+{%     set grad.prev_stop = stop %}
 {%   endfor %}
     <div class="chart-card">
      <div style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
@@ -89,7 +87,19 @@
     </a>
    </div>
 {% endfor %}
-   <p class="timestamp">Generated {{ now(utc=true).isoformat() }}</p>
+{% set l_ns = namespace(max_epoch=0) %}
+{% for l_host in groups['all'] %}
+{%   set l_epoch = hostvars[l_host].ansible_facts.date_time.epoch | default(0) | int %}
+{%   if l_epoch > l_ns.max_epoch %}{% set l_ns.max_epoch = l_epoch %}{% endif %}
+{% endfor %}
+   <p class="timestamp">Data as of <span id="data-as-of" data-epoch="{{ l_ns.max_epoch }}">—</span></p>
+   <script>
+    (function() {
+      var el = document.getElementById('data-as-of');
+      var ep = parseInt(el.getAttribute('data-epoch'), 10);
+      el.textContent = ep > 0 ? new Date(ep * 1000).toLocaleString() : 'unknown';
+    })();
+   </script>
   </div>
  </body>
 </html>

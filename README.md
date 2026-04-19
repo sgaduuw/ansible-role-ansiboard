@@ -11,7 +11,7 @@ The generated dashboard includes:
 - A front page with fleet-wide summary charts and group listing
 - An all-hosts page with a searchable, sortable table of every host
 - Per-group pages with donut charts and searchable, sortable host tables
-- Per-host detail pages with a configurable fact table and full JSON dump
+- Per-host detail pages with a configurable fact table
 - CSV export on all table pages
 - Automatic dark mode support
 
@@ -73,7 +73,7 @@ ansiboard_host_facts:
     key: kernel
 ```
 
-The full JSON of all gathered facts is always available in a collapsible section at the bottom of each host page.
+The front page shows a "Data as of" timestamp derived from the most recent `ansible_facts.date_time.epoch` in the inventory. The per-host `Facts age` column uses the same source. This means the dashboard reflects the freshness of the underlying fact cache, not when `ansible-playbook` last ran.
 
 Dependencies
 ------------
