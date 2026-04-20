@@ -17,6 +17,12 @@ platforms:
       - /tmp
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      gathering: smart
+      fact_caching: jsonfile
+      fact_caching_connection: ${MOLECULE_EPHEMERAL_DIRECTORY}/facts
+      fact_caching_timeout: 7200
   playbooks:
     prepare: prepare.yml
     converge: converge.yml
