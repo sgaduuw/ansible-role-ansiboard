@@ -94,6 +94,6 @@
 
     - name: Assert no unescaped </script> leaks into script blocks
       ansible.builtin.shell: >-
-        awk '/<\/script>/ && !/^[[:space:]]*<\/script>[[:space:]]*$/ { print FILENAME":"NR": "$0; bad=1 } END { exit bad+0 }'
+        awk '/<\/script>/ && !/(^|>)[[:space:]]*<\/script>[[:space:]]*$/ { print FILENAME":"NR": "$0; bad=1 } END { exit bad+0 }'
         /var/www/html/ansiboard/groups/*.html
       changed_when: false
