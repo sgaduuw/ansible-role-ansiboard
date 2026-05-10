@@ -2,10 +2,10 @@
 name: CI
 on:
   push:
-    branches: [main, master]
+    branches: [develop, main, master, "release/*", "hotfix/*"]
     tags: ["*"]
   pull_request:
-    branches: [main, master]
+    branches: [develop, main, master, "release/*", "hotfix/*"]
   schedule:
     - cron: "30 5 * * 1"
 
