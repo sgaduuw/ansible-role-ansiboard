@@ -1,0 +1,23 @@
+---
+name: release
+
+# Ping Ansible Galaxy to re-import the role on a tag push. Trusts the
+# PR gate (ci.yml ran lint + the molecule matrix on the
+# release->master PR); runs no lint/molecule here. Galaxy import is a
+# metadata re-fetch of the tagged commit, not a build.
+on:
+  push:
+    tags: ["*"]
+
+jobs:
+  notify-galaxy:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    steps:
+      - name: Trigger Galaxy import
+        run: >-
+          curl -s -X POST
+          -H "Authorization: Token ${{ secrets.GALAXY_API_KEY }}"
+          https://galaxy.ansible.com/api/v1/notifications/
+          -d '{"github_user":"sgaduuw","github_repo":"ansible-role-ansiboard"}'
